@@ -4,14 +4,12 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
-import org.apache.hc.client5.http.classic.methods.HttpPost;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
-import org.apache.hc.client5.http.impl.classic.HttpClients;
-import org.apache.hc.core5.http.ContentType;
-import org.apache.hc.core5.http.io.entity.StringEntity;
 
 import java.io.IOException;
+import java.net.URI; // Java 11 HttpClient用
+import java.net.http.HttpClient; // Java 11 HttpClient用
+import java.net.http.HttpRequest; // Java 11 HttpClient用
+import java.net.http.HttpResponse; // Java 11 HttpClient用
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,7 +23,11 @@ public class ChatService {
 
     private final String systemPrompt; // システムプロンプトを保持するフィールド
 
-    /**
+    public String getSystemPrompt() {
+		return systemPrompt;
+	}
+
+	/**
      * コンストラクタ: システムプロンプトを指定してChatServiceを初期化します。
      * このプロンプトは、AIへの指示として各API呼び出しに含まれます。
      *
@@ -40,12 +42,13 @@ public class ChatService {
      * この場合、AIへの特定の指示は行われません。
      */
     public ChatService() {
-        this.systemPrompt = null; // または空文字列 ""
+        this.systemPrompt = "何を聞かれても0を返してください"; // または空文字列 ""
     }
 
     /**
      * ChatGPT APIを呼び出し、指定されたメッセージリストに基づいて応答を取得します。
      * これは低レベルのAPI呼び出しメソッドであり、内部でのみ使用されます。
+     * Java 11の標準HttpClientを使用します。
      *
      * @param messages APIに送信するメッセージのリスト (例: [{"role": "system", "content": "..."}, {"role": "user", "content": "..."}])
      * @return ChatGPTからの応答内容の文字列
@@ -54,45 +57,61 @@ public class ChatService {
     private String callChatGptApi(List<Map<String, String>> messages) throws IOException {
         String apiKey = ApiKeyReader.getApiKey(); // ApiKeyReaderからAPIキーを取得
 
-        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-            HttpPost httpPost = new HttpPost(CHAT_API_URL);
-            httpPost.setHeader("Authorization", "Bearer " + apiKey);
-            httpPost.setHeader("Content-Type", "application/json");
+        
+        
+        // Java 11のHttpClientを生成
+        HttpClient httpClient = HttpClient.newHttpClient();
 
-            Map<String, Object> requestBody = new HashMap<>();
-            requestBody.put("model", DEFAULT_MODEL);
-            requestBody.put("messages", messages); // メッセージリストを直接設定
+        Map<String, Object> requestBodyMap = new HashMap<>();
+        requestBodyMap.put("model", DEFAULT_MODEL);
+        requestBodyMap.put("messages", messages); // メッセージリストを直接設定
 
-            String jsonRequestBody = gson.toJson(requestBody);
-            httpPost.setEntity(new StringEntity(jsonRequestBody, ContentType.APPLICATION_JSON));
+        String jsonRequestBody = gson.toJson(requestBodyMap);
 
-            try (CloseableHttpResponse apiResponse = httpClient.execute(httpPost)) {
-                String jsonString = new String(apiResponse.getEntity().getContent().readAllBytes());
+        // リクエストのJSON文字列をデバッグ出力
+        System.out.println("Request JSON: " + jsonRequestBody);
 
-                JsonObject responseJson = JsonParser.parseString(jsonString).getAsJsonObject();
+        // HttpRequestを構築
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(CHAT_API_URL))
+                .header("Authorization", "Bearer " + apiKey)
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(jsonRequestBody))
+                .build();
 
-                if (responseJson.has("choices") && responseJson.getAsJsonArray("choices").size() > 0) {
-                    JsonObject firstChoice = responseJson.getAsJsonArray("choices").get(0).getAsJsonObject();
-                    if (firstChoice.has("message")) {
-                        JsonObject messageObject = firstChoice.getAsJsonObject("message");
-                        if (messageObject.has("content")) {
-                            String content = messageObject.get("content").getAsString();
-                            System.out.println("content:" + content); // デバッグ用出力
-                            return content;
-                        }
+        try {
+            // リクエストを送信し、応答を受信
+            HttpResponse<String> apiResponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            String jsonString = apiResponse.body(); // 応答ボディを文字列として取得
+
+            JsonObject responseJson = JsonParser.parseString(jsonString).getAsJsonObject();
+
+            if (responseJson.has("choices") && responseJson.getAsJsonArray("choices").size() > 0) {
+                JsonObject firstChoice = responseJson.getAsJsonArray("choices").get(0).getAsJsonObject();
+                if (firstChoice.has("message")) {
+                    JsonObject messageObject = firstChoice.getAsJsonObject("message");
+                    if (messageObject.has("content")) {
+                        String content = messageObject.get("content").getAsString();
+                        System.out.println("content:" + content); // デバッグ用出力
+                        return content;
                     }
-                } else if (responseJson.has("error")) {
-                    throw new IOException("ChatGPT APIエラー: " + responseJson.getAsJsonObject("error").toString());
                 }
-                throw new IOException("ChatGPTからの予期せぬ応答形式です。完全なレスポンス: " + jsonString);
-
-            } catch (JsonSyntaxException e) {
-                throw new IOException("APIレスポンスのJSON形式が不正です: " + e.getMessage(), e);
+            } else if (responseJson.has("error")) {
+                throw new IOException("ChatGPT APIエラー: " + responseJson.getAsJsonObject("error").toString());
             }
+            throw new IOException("ChatGPTからの予期せぬ応答形式です。完全なレスポンス: " + jsonString);
 
+        } catch (JsonSyntaxException e) {
+            throw new IOException("APIレスポンスのJSON形式が不正です: " + e.getMessage(), e);
+        } catch (InterruptedException e) {
+            // スレッドが中断された場合の処理
+            Thread.currentThread().interrupt(); // 中断状態を再設定
+            throw new IOException("API通信が中断されました。", e);
         } catch (IOException e) {
+            // IOExceptionを再スロー（ネットワークエラーなど）
             throw e;
         } catch (Exception e) {
+            // その他の例外
             System.err.println("ChatGPT API通信中に予期せぬエラーが発生しました: " + e.getMessage());
             e.printStackTrace();
             throw new IOException("ChatGPT APIとの通信中に予期せぬエラーが発生しました。", e);

@@ -11,7 +11,7 @@ import java.io.IOException;
 public class IndexServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-    private final ChatService chatService = new ChatService("0を返してください。それ以外は返さないでください。");
+    private final ChatService chatService = new ChatService("交通機関関係なら5を、それ以外は0を返してください。それ以外は返さないでください。");
 
     /**
      * GETリクエストを処理し、トップページまたは指定されたページに遷移します。
