@@ -4,13 +4,11 @@
 
 ## To configure this workflow:
 
-## 1. Download the Publish Profile for your Azure Web App. You can download this file from the Overview page of your Web App in the Azure Portal.
-#    For more information: https://docs.microsoft.com/en-us/azure/app-service/deploy-github-actions?tabs=applevel#generate-deployment-credentials
+## 1. Create an Azure Service Principal and add it as a secret in your repository named AZURE_CREDENTIALS.
+#    For more information on creating a service principal: https://docs.microsoft.com/en-us/azure/developer/github-actions/configure-action-azure-resource
+#    For instructions on creating a GitHub secret: https://docs.github.com/en/actions/reference/encrypted-secrets#creating-encrypted-secrets-for-a-repository
 
-## 2. Create a secret in your repository named AZURE_WEBAPP_PUBLISH_PROFILE, paste the publish profile contents as the value of the secret.
-#    For instructions on obtaining the publish profile see: https://docs.microsoft.com/azure/app-service/deploy-github-actions#configure-the-github-secret
-
-## 3. Change the value for the AZURE_WEBAPP_NAME. Optionally, change the JAVA_VERSION environment variable below.
+## 2. Change the value for the AZURE_WEBAPP_NAME. Optionally, change the JAVA_VERSION environment variable below.
 
 ## For more information on GitHub Actions for Azure: https://github.com/Azure/Actions
 # For more information on the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
@@ -29,6 +27,7 @@ on:
 
 permissions:
   contents: read
+  id-token: write # azure/login アクションのために必要
 
 jobs:
   build:
@@ -55,6 +54,7 @@ jobs:
   deploy:
     permissions:
       contents: none
+      id-token: write # azure/login アクションのために必要
     runs-on: ubuntu-latest
     needs: build
     environment:
@@ -66,10 +66,15 @@ jobs:
         with:
           name: java-app
 
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }} # サービスプリンシパルの認証情報を含むシークレット
+
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           package: '*.war' # JARパッケージからWARパッケージに変更
+          # publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }} # Azure Loginを使用するため、これは不要になりました
