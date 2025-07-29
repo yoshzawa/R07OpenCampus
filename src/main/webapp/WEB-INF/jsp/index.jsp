@@ -33,7 +33,7 @@ String message=(String)request.getAttribute("message");
 
         <div class="footer">
             <p>&copy; 2025 ホテルステラ仙台駅前. All Rights Reserved.</p>
-            <a href="./debug">デバッグページ</a>
+            <a href="./debug">設定ページ</a>
         </div>
     </div>
 </body>
