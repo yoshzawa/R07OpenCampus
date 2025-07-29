@@ -105,7 +105,7 @@
         <div class="chat-form">
             <h2>AIコンシェルジュにご質問ください</h2>
             <p>ご不明な点や知りたいことがございましたら、お気軽にご質問ください。</p>
-            <form action="chat" method="post">
+            <form action="./index.html" method="post">
                 <label for="prompt">質問内容:</label>
                 <input type="text" id="prompt" name="prompt" size="60" placeholder="例: Wi-Fiのパスワードは？、近くのコンビニはどこですか？">
                 <input type="submit" value="質問を送信">

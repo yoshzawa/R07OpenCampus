@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -10,6 +10,6 @@
 <pre>
 <%= request.getAttribute("apiResponse") %>
 </pre>
-<a href="./input.jsp">Back to Form</a>
+<a href="../input.jsp">Back to Form</a>
 </body>
 </html>
