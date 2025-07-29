@@ -8,14 +8,14 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jp.ac.jc21.tcc.AiSystemEngineeringDept.ChatService;
 
 @WebServlet("/setting/result")
 public class ResultServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	static final String DEFAULT_CHAT_SERVICE_PROMPT="必ず0を返してください。それ以外は返さないでください。";
 
-    // ChatServiceのインスタンスを生成
-    private final ChatService chatService = new ChatService();
 
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -27,7 +27,18 @@ public class ResultServlet extends HttpServlet {
 			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "質問が入力されていません。");
 			return;
 		}
+        HttpSession session = request.getSession();
+        String sessionScript = (String) session.getAttribute("script");
 
+        String currentSystemPrompt;
+        if (sessionScript != null && !sessionScript.isEmpty()) {
+            currentSystemPrompt = sessionScript;
+        } else {
+            // セッションに設定がなければ、デフォルトのプロンプトを使用
+            currentSystemPrompt = DEFAULT_CHAT_SERVICE_PROMPT;
+        }
+        ChatService chatService = new ChatService(currentSystemPrompt);
+        
 		String apiResponseContent;
 		try {
             // ChatServiceを呼び出してChatGPTからの応答を取得
