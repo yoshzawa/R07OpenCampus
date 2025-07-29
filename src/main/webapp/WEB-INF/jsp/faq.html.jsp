@@ -6,17 +6,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>よくあるご質問（FAQ） | ホテルステラ仙台駅前</title>
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 20px; background-color: #f4f4f4; }
-        .container { max-width: 800px; margin: auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        h1, h2 { color: #2c3e50; border-bottom: 2px solid #e74c3c; padding-bottom: 10px; margin-top: 30px; }
-        .faq-item { margin-bottom: 20px; }
-        .faq-item dt { font-weight: bold; color: #3498db; margin-bottom: 5px; }
-        .faq-item dd { margin-left: 20px; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px dashed #eee; }
-        .back-link { display: block; text-align: center; margin-top: 30px; }
-        .back-link a { color: #3498db; text-decoration: none; font-weight: bold; }
-        .back-link a:hover { text-decoration: underline; }
-    </style>
+    <link rel="stylesheet" type="text/css" href="../../css/jsp_style.css">
+
 </head>
 <body>
     <div class="container">

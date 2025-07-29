@@ -6,17 +6,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>観光・周辺情報（主要スポット） | ホテルステラ仙台駅前</title>
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 20px; background-color: #f4f4f4; }
-        .container { max-width: 800px; margin: auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        h1, h2 { color: #2c3e50; border-bottom: 2px solid #e74c3c; padding-bottom: 10px; margin-top: 30px; }
-        .spot-item { margin-bottom: 25px; padding: 15px; border: 1px solid #ddd; border-radius: 5px; background-color: #fdfdfd; }
-        .spot-item h3 { color: #3498db; margin-top: 0; }
-        .spot-item p { margin-bottom: 5px; }
-        .back-link { display: block; text-align: center; margin-top: 30px; }
-        .back-link a { color: #3498db; text-decoration: none; font-weight: bold; }
-        .back-link a:hover { text-decoration: underline; }
-    </style>
+    <link rel="stylesheet" type="text/css" href="../../css/jsp_style.css">
+
 </head>
 <body>
     <div class="container">
