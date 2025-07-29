@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>ChatGPT Response</title>
-    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="stylesheet" type="text/css" href="./css/style.css">
 </head>
 <body>
     <div class="container">
@@ -12,7 +12,7 @@
         <pre>
 <%= request.getAttribute("apiResponse") %>
         </pre>
-        <a href="../input.jsp">Back to Form</a>
+        <a href="../debug">Back to Form</a>
     </div>
 </body>
 </html>
