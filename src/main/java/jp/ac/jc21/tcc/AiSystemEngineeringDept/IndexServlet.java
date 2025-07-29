@@ -13,7 +13,7 @@ public class IndexServlet extends HttpServlet { // クラス名をChatServletか
 
     // 遷移先のURLを格納する配列
     private static final String[] PAGE_PATHS = {
-        "/WEB-INF/jsp/index.jsp",                   // 0: その他、またはエラー時
+        "/WEB-INF/jsp/index2.jsp",                   // 0: その他、またはエラー時
         "/WEB-INF/jsp/hotel_info.jsp",             // 1: ホテル基本情報と館内施設
         "/WEB-INF/jsp/restaurant_breakfast.jsp",   // 2: レストラン・朝食会場
         "/WEB-INF/jsp/sightseeing_spots.jsp",      // 3: 観光・主要スポット
@@ -89,6 +89,7 @@ public class IndexServlet extends HttpServlet { // クラス名をChatServletか
         // categoryNumberが配列の範囲内であることを確認
         if (categoryNumber >= 0 && categoryNumber < PAGE_PATHS.length) {
             forwardPath = PAGE_PATHS[categoryNumber];
+            request.setAttribute("message", "ご質問にお答えできるご案内ページのご用意がありませんでした。恐れ入りますが、別の言い方でご質問ください。");
         } else {
             // 予期せぬ数値が返された場合（ChatService側で0に変換されるはずだが、念のため）
             if (errorMessage == null) {
