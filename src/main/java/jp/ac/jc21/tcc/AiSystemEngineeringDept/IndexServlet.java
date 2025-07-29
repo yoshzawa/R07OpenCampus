@@ -7,21 +7,32 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebServlet({"/", "/index.html"}) // ルートパスと/chatの両方でアクセス可能にする
-public class IndexServlet extends HttpServlet {
+@WebServlet({"/", "/index.html"}) // ルートパスと/index.htmlの両方でアクセス可能にする
+public class IndexServlet extends HttpServlet { // クラス名をChatServletからIndexServletに変更
 	private static final long serialVersionUID = 1L;
 
+    // 遷移先のURLを格納する配列
+    private static final String[] PAGE_PATHS = {
+        "/WEB-INF/jsp/index.jsp",                   // 0: その他、またはエラー時
+        "/WEB-INF/jsp/hotel_info.jsp",             // 1: ホテル基本情報と館内施設
+        "/WEB-INF/jsp/restaurant_breakfast.jsp",   // 2: レストラン・朝食会場
+        "/WEB-INF/jsp/sightseeing_spots.jsp",      // 3: 観光・主要スポット
+        "/WEB-INF/jsp/gourmet_shopping.jsp",       // 4: 観光・グルメ・ショッピング
+        "/WEB-INF/jsp/transportation.jsp",         // 5: 交通機関
+        "/WEB-INF/jsp/emergency_info.jsp",         // 6: 非常時
+        "/WEB-INF/jsp/services_amenities.jsp",     // 7: サービス・貸し出し備品
+        "/WEB-INF/jsp/faq.jsp"                     // 8: よくある質問 (FAQ)
+    };
+
+    // ChatServiceのインスタンスを生成 (ユーザー指定のプロンプトを使用)
     private final ChatService chatService = new ChatService("交通機関関係なら5を、それ以外は0を返してください。それ以外は返さないでください。");
 
     /**
-     * GETリクエストを処理し、トップページまたは指定されたページに遷移します。
-     * パラメータがない場合はトップページ (index.jsp) に遷移します。
+     * GETリクエストを処理し、トップページに遷移します。
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // パラメータの有無に関わらず、基本的にはindex.jspにフォワード
-        // 必要であれば、特定のパラメータに基づいて他のページに飛ばすロジックを追加可能
         request.getRequestDispatcher("/WEB-INF/jsp/index.jsp").forward(request, response);
     }
 
@@ -34,7 +45,7 @@ public class IndexServlet extends HttpServlet {
 		request.setCharacterEncoding("UTF-8"); // リクエストの文字エンコーディングをUTF-8に設定
 
 		String userPrompt = request.getParameter("prompt"); // ユーザーの質問を取得
-		String forwardPath = "/index.jsp"; // デフォルトの遷移先はトップページ
+		String forwardPath = PAGE_PATHS[0]; // デフォルトの遷移先はトップページ (PAGE_PATHS[0])
 
 		if (userPrompt == null || userPrompt.trim().isEmpty()) {
             // 質問が空の場合はエラーメッセージを設定し、トップページに戻す
@@ -55,6 +66,11 @@ public class IndexServlet extends HttpServlet {
 			e.printStackTrace();
 			errorMessage = "ChatGPT APIとの通信中にエラーが発生しました: " + e.getMessage();
             categoryNumber = 0; // エラー時はトップページへ
+        } catch (IllegalStateException e) { // ChatServiceでシステムプロンプトが設定されていない場合
+            System.err.println("ChatServiceの初期化エラー: " + e.getMessage());
+            e.printStackTrace();
+            errorMessage = "システム設定エラーが発生しました。";
+            categoryNumber = 0; // エラー時はトップページへ
 		} catch (RuntimeException e) {
             // APIキーの取得エラーなど、getApiKey()からのRuntimeException
             System.err.println("APIキーまたはサービスエラー: " + e.getMessage());
@@ -63,41 +79,22 @@ public class IndexServlet extends HttpServlet {
             categoryNumber = 0; // エラー時はトップページへ
         }
 
+
         // エラーメッセージがあれば設定
         if (errorMessage != null) {
             request.setAttribute("message", errorMessage);
         }
 
         // 取得したカテゴリ番号に基づいて遷移先を決定
-        switch (categoryNumber) {
-            case 1:
-                forwardPath = "/WEB-INF/jsp//hotel_info.jsp"; // ホテル基本情報と館内施設
-                break;
-            case 2:
-                forwardPath = "/WEB-INF/jsp//restaurant_breakfast.jsp"; // レストラン・朝食会場
-                break;
-            case 3:
-                forwardPath = "/WEB-INF/jsp//sightseeing_spots.jsp"; // 観光・主要スポット
-                break;
-            case 4:
-                forwardPath = "/WEB-INF/jsp//gourmet_shopping.jsp"; // 観光・グルメ・ショッピング
-                break;
-            case 5:
-                forwardPath = "/WEB-INF/jsp//transportation.jsp"; // 交通機関
-                break;
-            case 6:
-                forwardPath = "/WEB-INF/jsp//emergency_info.jsp"; // 非常時
-                break;
-            case 7:
-                forwardPath = "/WEB-INF/jsp//services_amenities.jsp"; // サービス・貸し出し備品
-                break;
-            case 8:
-                forwardPath = "/WEB-INF/jsp/faq.jsp"; // よくある質問 (FAQ)
-                break;
-            case 0:
-            default:
-                forwardPath = "/WEB-INF/jsp/index.jsp";
-                break;
+        // categoryNumberが配列の範囲内であることを確認
+        if (categoryNumber >= 0 && categoryNumber < PAGE_PATHS.length) {
+            forwardPath = PAGE_PATHS[categoryNumber];
+        } else {
+            // 予期せぬ数値が返された場合（ChatService側で0に変換されるはずだが、念のため）
+            if (errorMessage == null) {
+                request.setAttribute("message", "恐れ入りますが、ご質問の意図を正確に理解できませんでした。別の言葉でお試しいただくか、以下の案内ページをご参照ください。");
+            }
+            forwardPath = PAGE_PATHS[0]; // デフォルトのトップページへ
         }
 
         // 決定したパスに転送
