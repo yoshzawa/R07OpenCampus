@@ -6,17 +6,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ホテル基本情報と館内施設のご案内 | ホテルステラ仙台駅前</title>
+    <link rel="stylesheet" type="text/css" href="../../css/jsp_style.css">
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 20px; background-color: #f4f4f4; }
-        .container { max-width: 800px; margin: auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        h1, h2 { color: #2c3e50; border-bottom: 2px solid #e74c3c; padding-bottom: 10px; margin-top: 30px; }
-        ul { list-style: none; padding: 0; }
-        ul li { background: #ecf0f1; margin-bottom: 10px; padding: 12px 15px; border-radius: 5px; }
-        p { margin-bottom: 15px; }
-        .note { font-size: 0.9em; color: #7f8c8d; }
-        .back-link { display: block; text-align: center; margin-top: 30px; }
-        .back-link a { color: #3498db; text-decoration: none; font-weight: bold; }
-        .back-link a:hover { text-decoration: underline; }
+        /* hotel_info.jsp固有のスタイル */
+        p.note { font-size: 0.9em; color: #7f8c8d; }
     </style>
 </head>
 <body>
