@@ -9,7 +9,7 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 
-@WebServlet({"/", "/index.html"}) // ルートパスと/index.htmlの両方でアクセス可能にする
+@WebServlet({ "/index.html"}) // ルートパスと/index.htmlの両方でアクセス可能にする
 public class IndexServlet extends HttpServlet { // クラス名をChatServletからIndexServletに変更
 	private static final long serialVersionUID = 1L;
 

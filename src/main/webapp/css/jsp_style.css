@@ -1,9 +1,266 @@
-body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 20px; background-color: #f4f4f4; }
-.container { max-width: 800px; margin: auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-h1, h2 { color: #2c3e50; border-bottom: 2px solid #e74c3c; padding-bottom: 10px; margin-top: 30px; }
-p { margin-bottom: 15px; }
-ul { list-style: none; padding: 0; }
-ul li { background: #ecf0f1; margin-bottom: 10px; padding: 12px 15px; border-radius: 5px; }
-.back-link { display: block; text-align: center; margin-top: 30px; }
-.back-link a { color: #3498db; text-decoration: none; font-weight: bold; }
-.back-link a:hover { text-decoration: underline; }
+/* jsp_style.css */
+
+/* 基本設定 */
+body {
+    font-family: 'Inter', 'Segoe UI', 'Roboto', 'Noto Sans JP', sans-serif; /* モダンなフォント */
+    line-height: 1.6;
+    color: #333; /* ダークグレーのテキスト */
+    margin: 0;
+    padding: 20px;
+    background-color: #f8f8f8; /* わずかにクールなオフホワイトの背景 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* コンテナ */
+.container {
+    max-width: 800px;
+    width: 100%;
+    margin: auto;
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 10px; /* やや丸みを帯びた角 */
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1); /* より深みのある影 */
+    text-align: center;
+    border: 1px solid #e0e0e0; /* 薄いボーダー */
+}
+
+/* 見出し */
+h1 {
+    color: #2c3e50; /* ダークネイビー */
+    border-bottom: 3px solid #34495e; /* より濃いネイビーのアンダーライン */
+    padding-bottom: 15px;
+    margin-bottom: 30px;
+    font-size: 2.4em;
+    font-weight: 600; /* 少し太めのフォント */
+}
+
+h2 {
+    color: #34495e; /* ダークネイビー */
+    margin-top: 40px;
+    margin-bottom: 20px;
+    font-size: 1.9em;
+    font-weight: 500;
+}
+
+/* 段落 */
+p {
+    font-size: 1.05em;
+    margin-bottom: 20px;
+    color: #555;
+}
+
+/* リスト */
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+ul li {
+    background: #f0f4f7; /* 明るいグレーブルーの背景 */
+    margin-bottom: 8px;
+    padding: 12px 20px;
+    border-radius: 6px;
+    border-left: 4px solid #5a7d9a; /* アクセントカラーの左ボーダー */
+    font-size: 1.0em;
+    color: #444;
+}
+
+/* リンク */
+.back-link {
+    display: block;
+    text-align: center;
+    margin-top: 30px;
+}
+
+.back-link a {
+    color: #007bff; /* ビジネスライクな青 */
+    text-decoration: none;
+    font-weight: bold;
+    padding: 8px 15px;
+    border: 1px solid #007bff;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.back-link a:hover {
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+}
+
+/* フォーム関連 */
+.chat-form {
+    background-color: #ffffff; /* フォーム背景 */
+    padding: 30px;
+    border-radius: 10px;
+    border: 1px solid #e0e0e0;
+    margin-top: 30px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+.chat-form label {
+    display: block;
+    margin-bottom: 12px;
+    font-size: 1.05em;
+    color: #34495e;
+    text-align: left;
+}
+
+.chat-form input[type="text"] {
+    width: calc(100% - 24px); /* パディング分を調整 */
+    padding: 12px;
+    margin-top: 5px;
+    border: 1px solid #c0c0c0;
+    border-radius: 6px;
+    font-size: 1em;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+}
+
+.chat-form input[type="text"]:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+.chat-form input[type="submit"] {
+    background-color: #007bff; /* ボタン背景 */
+    color: white;
+    padding: 12px 35px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1.1em;
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    margin-top: 25px;
+    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2);
+}
+
+.chat-form input[type="submit"]:hover {
+    background-color: #0056b3; /* ホバー時の色 */
+    transform: translateY(-2px);
+}
+
+/* メッセージ表示 */
+.info-message, .error-message {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 0.95em;
+    text-align: left;
+}
+
+.info-message {
+    background-color: #e6f7ff; /* 明るい青の背景 */
+    border: 1px solid #99d9ff;
+    color: #0056b3;
+}
+
+.error-message {
+    background-color: #ffe6e6; /* 明るい赤の背景 */
+    border: 1px solid #ff9999;
+    color: #cc0000;
+}
+
+/* フッター */
+.footer {
+    margin-top: 40px;
+    font-size: 0.85em;
+    color: #777;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.footer a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.footer a:hover {
+    text-decoration: underline;
+}
+
+/* 特定の要素のスタイル調整 */
+.important-note {
+    background-color: #fff3cd; /* 警告色 */
+    border: 1px solid #ffeeba;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    font-weight: bold;
+    color: #856404;
+    text-align: left;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 20px auto;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.note {
+    font-size: 0.85em;
+    color: #7f8c8d;
+    text-align: center;
+}
+
+.faq-item {
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    background-color: #fcfcfc;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.05);
+    text-align: left;
+}
+
+.faq-item dt {
+    font-weight: bold;
+    color: #007bff; /* 青色の質問 */
+    margin-bottom: 5px;
+    font-size: 1.1em;
+}
+
+.faq-item dd {
+    margin-left: 20px;
+    margin-bottom: 0;
+    padding-bottom: 0;
+    color: #444;
+}
+
+.spot-item, .item-list {
+    margin-bottom: 25px;
+    padding: 15px;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    background-color: #fdfdfd;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.05);
+    text-align: left;
+}
+.spot-item h3, .item-list h3 {
+    color: #34495e; /* ダークネイビー */
+    margin-top: 0;
+    font-size: 1.3em;
+    border-bottom: 1px dashed #cfd8dc;
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+}
+.spot-item p, .item-list p {
+    margin-bottom: 5px;
+    font-size: 0.95em;
+    color: #666;
+}

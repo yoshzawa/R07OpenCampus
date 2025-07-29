@@ -8,7 +8,7 @@ String message=(String)request.getAttribute("message");
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ホテルステラ仙台駅前 | トップページ</title>
-    <link rel="stylesheet" type="text/css" href="../../css/jsp_style.css">
+    <link rel="stylesheet" type="text/css" href="./css/jsp_style.css">
 </head>
 <body>
     <div class="container">
