@@ -11,6 +11,8 @@ import java.io.IOException;
 public class ChatServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
+	static final String DEFAULT_CHAT_SERVICE_PROMPT="必ず0を返してください。それ以外は返さないでください。";
+
     // 遷移先のURLを格納する配列
     private static final String[] PAGE_PATHS = {
         "/index.jsp",                   // 0: その他、またはエラー時

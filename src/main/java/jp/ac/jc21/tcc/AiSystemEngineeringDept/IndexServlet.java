@@ -5,11 +5,15 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
 import java.io.IOException;
 
 @WebServlet({"/", "/index.html"}) // ルートパスと/index.htmlの両方でアクセス可能にする
 public class IndexServlet extends HttpServlet { // クラス名をChatServletからIndexServletに変更
 	private static final long serialVersionUID = 1L;
+
+	static final String DEFAULT_CHAT_SERVICE_PROMPT="必ず0を返してください。それ以外は返さないでください。";
 
     // 遷移先のURLを格納する配列
     private static final String[] PAGE_PATHS = {
@@ -25,7 +29,6 @@ public class IndexServlet extends HttpServlet { // クラス名をChatServletか
     };
 
     // ChatServiceのインスタンスを生成 (ユーザー指定のプロンプトを使用)
-    private final ChatService chatService = new ChatService("交通機関関係なら5を、それ以外は0を返してください。それ以外は返さないでください。");
 
     /**
      * GETリクエストを処理し、トップページに遷移します。
@@ -53,6 +56,19 @@ public class IndexServlet extends HttpServlet { // クラス名をChatServletか
             request.getRequestDispatcher(forwardPath).forward(request, response);
 			return;
 		}
+
+		
+        HttpSession session = request.getSession();
+        String sessionScript = (String) session.getAttribute("script");
+
+        String currentSystemPrompt;
+        if (sessionScript != null && !sessionScript.isEmpty()) {
+            currentSystemPrompt = sessionScript;
+        } else {
+            // セッションに設定がなければ、デフォルトのプロンプトを使用
+            currentSystemPrompt = DEFAULT_CHAT_SERVICE_PROMPT;
+        }
+        ChatService chatService = new ChatService(currentSystemPrompt);
 
 		int categoryNumber;
 		String errorMessage = null;

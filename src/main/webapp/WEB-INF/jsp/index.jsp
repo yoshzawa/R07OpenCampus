@@ -94,6 +94,18 @@
             margin-top: 40px;
             font-size: 0.9em;
             color: #555;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px; /* リンクと著作権表示の間にスペースを追加 */
+        }
+        .footer a {
+            color: #00796b;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .footer a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -120,6 +132,7 @@
 
         <div class="footer">
             <p>&copy; 2025 ホテルステラ仙台駅前. All Rights Reserved.</p>
+            <a href="./debug">デバッグページ</a>
         </div>
     </div>
 </body>
