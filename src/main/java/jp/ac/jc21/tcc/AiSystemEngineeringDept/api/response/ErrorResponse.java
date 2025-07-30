@@ -1,5 +1,4 @@
-package jp.ac.jc21.tcc.AiSystemEngineeringDept.api;
-
+package jp.ac.jc21.tcc.AiSystemEngineeringDept.api.response;
 
 public class ErrorResponse {
     private OpenAiError error;

@@ -1,11 +1,13 @@
-package jp.ac.jc21.tcc.AiSystemEngineeringDept.api;
-
+package jp.ac.jc21.tcc.AiSystemEngineeringDept.api.response;
 
 import com.google.gson.annotations.SerializedName;
 
+import jp.ac.jc21.tcc.AiSystemEngineeringDept.api.Message;
+
+
 public class Choice {
     private int index;
-    private Message message; // 新しく定義したMessageクラスを使用
+    private Message message;
 
     @SerializedName("finish_reason")
     private String finishReason;

@@ -1,4 +1,6 @@
-package jp.ac.jc21.tcc.AiSystemEngineeringDept.setting; // パッケージ名を修正
+package jp.ac.jc21.tcc.AiSystemEngineeringDept.setting;
+
+import java.io.IOException;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -6,8 +8,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-
-import java.io.IOException;
+import jp.ac.jc21.tcc.AiSystemEngineeringDept.ChatServiceHelper; // 新しく追加
+import jp.ac.jc21.tcc.AiSystemEngineeringDept.api.ChatService;
 
 /**
  * Servlet implementation class DebugServlet
@@ -16,10 +18,6 @@ import java.io.IOException;
 @WebServlet("/debug")
 public class DebugServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
-    // デフォルトのシステムプロンプト（IndexServletのDEFAULT_CHAT_SERVICE_PROMPTと合わせる）
-	static final String DEFAULT_CHAT_SERVICE_PROMPT="必ず0を返してください。それ以外は返さないでください。";
-
 
 	/**
 	 * GETリクエストを処理し、現在のシステムプロンプトを表示するデバッグページにフォワードします。
@@ -27,17 +25,10 @@ public class DebugServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
-        String sessionScript = (String) session.getAttribute("script");
-
-        String currentSystemPrompt;
-        if (sessionScript != null && !sessionScript.isEmpty()) {
-            currentSystemPrompt = sessionScript;
-        } else {
-            // セッションに設定がなければ、デフォルトのプロンプトを使用
-            currentSystemPrompt = DEFAULT_CHAT_SERVICE_PROMPT;
-        }
-        request.setAttribute("currentSystemPrompt", currentSystemPrompt);
-		request.getRequestDispatcher("/input.jsp").forward(request, response); // input.jspからdebug_input.jspに修正
+        // ChatServiceHelperを使ってシステムプロンプトを取得
+        ChatService chatService = ChatServiceHelper.createChatServiceFromSession(session);
+        request.setAttribute("currentSystemPrompt", chatService.getSystemPrompt());
+		request.getRequestDispatcher("/input.jsp").forward(request, response);
 	}
 
     /**
@@ -46,7 +37,7 @@ public class DebugServlet extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.setCharacterEncoding("UTF-8"); // リクエストの文字エンコーディングを設定
+        request.setCharacterEncoding("UTF-8");
 
         String newSystemPrompt = request.getParameter("systemPrompt");
         HttpSession session = request.getSession();
@@ -57,8 +48,7 @@ public class DebugServlet extends HttpServlet {
         } else {
             request.setAttribute("errorMessage", "システムプロンプトの取得に失敗しました。");
         }
-        
-        // 設定後、再度doGetを呼び出してデバッグページを再表示
-        doGet(request, response);
+
+        doGet(request, response); // 設定後、再度doGetを呼び出してデバッグページを再表示
     }
 }

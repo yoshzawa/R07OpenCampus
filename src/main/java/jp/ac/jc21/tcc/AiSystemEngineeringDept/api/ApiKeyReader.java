@@ -1,4 +1,4 @@
-package jp.ac.jc21.tcc.AiSystemEngineeringDept;
+package jp.ac.jc21.tcc.AiSystemEngineeringDept.api;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;

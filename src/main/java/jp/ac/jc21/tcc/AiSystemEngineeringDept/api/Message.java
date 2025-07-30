@@ -1,5 +1,7 @@
 package jp.ac.jc21.tcc.AiSystemEngineeringDept.api;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Message {
     private String role;
     private String content;
