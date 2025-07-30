@@ -1,4 +1,4 @@
-package jp.ac.jc21.tcc.AiSystemEngineeringDept;
+package jp.ac.jc21.tcc.AiSystemEngineeringDept.api;
 
 import java.io.IOException;
 import java.net.URI;
@@ -11,15 +11,17 @@ import java.util.List;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
-import jp.ac.jc21.tcc.AiSystemEngineeringDept.api.Message;
-import jp.ac.jc21.tcc.AiSystemEngineeringDept.api.OpenAiApiRequest;
-import jp.ac.jc21.tcc.AiSystemEngineeringDept.api.OpenAiApiResponse;
+import jp.ac.jc21.tcc.AiSystemEngineeringDept.api.request.OpenAiApiRequest;
+import jp.ac.jc21.tcc.AiSystemEngineeringDept.api.response.OpenAiApiResponse;
+
 
 public class ChatService {
 
 	private final Gson gson = new Gson();
 	private static final String CHAT_API_URL = "https://api.openai.com/v1/chat/completions";
 	private static final String DEFAULT_MODEL = "gpt-4o";
+
+    // DEFAULT_CHAT_SERVICE_PROMPT は ChatServiceHelper に移動されました
 
 	private final String systemPrompt;
 
@@ -38,9 +40,12 @@ public class ChatService {
 
 	/**
 	 * デフォルトコンストラクタ: システムプロンプトなしでChatServiceを初期化します。
+	 * この場合、空のシステムプロンプトが設定されます。
+	 * 通常、このコンストラクタは直接使用せず、ChatServiceHelper.createChatServiceFromSession()などを通じて、
+	 * 適切なシステムプロンプトが設定されたChatServiceインスタンスを取得することを推奨します。
 	 */
 	public ChatService() {
-		this("何を聞かれても0を返してください");
+		this(""); // デフォルトで空文字列を設定
 	}
 
 	/**
@@ -118,14 +123,16 @@ public class ChatService {
 
 	/**
 	 * 指定されたプロンプトを使用してChatGPT APIと通信し、 ユーザーの質問がどのカテゴリに属するかを示す数値を応答として取得します。
+	 * このメソッドの動作には、ChatServiceのインスタンス化時にカテゴリ分類のシステムプロンプトが設定されている必要があります。
 	 *
 	 * @param userPrompt ユーザーからの質問プロンプト
 	 * @return ChatGPT APIから戻ってきた数値
 	 * @throws IOException API通信またはJSON処理中にエラーが発生した場合
 	 */
 	public int getChatGPTResponseCategory(String userPrompt) throws IOException {
-		if (this.systemPrompt == null || this.systemPrompt.isEmpty()) {
-			throw new IllegalStateException("カテゴリ分類のためのシステムプロンプトが設定されていません。ChatServiceを適切なプロンプトで初期化してください。");
+		// システムプロンプトがカテゴリ分類用であるかをより厳密にチェック（必須ではないが、意図しない使用を防ぐため）
+		if (this.systemPrompt == null || !this.systemPrompt.contains("カテゴリに分類し") || !this.systemPrompt.contains("数値のみを返してください")) {
+			System.err.println("警告: getChatGPTResponseCategoryが意図しないシステムプロンプトで使用されている可能性があります。カテゴリ分類用のプロンプトを推奨します。現在のプロンプト: " + this.systemPrompt);
 		}
 
 		List<Message> messages = new ArrayList<>();
