@@ -7,6 +7,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional; // Optionalをインポート
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -56,7 +57,10 @@ public class ChatService {
 	 * @throws IOException API通信またはJSON処理中にエラーが発生した場合
 	 */
 	private String callChatGptApi(OpenAiApiRequest requestBody) throws IOException {
-		String apiKey = ApiKeyReader.getApiKey();
+		// ApiKeyReader.getApiKey() が Optional<String> を返すようになったため修正
+		String apiKey = ApiKeyReader.getApiKey()
+								  .orElseThrow(() -> new IOException("APIキーが見つかりません。環境変数 CHATGPT_API_KEY または CHATGPT_API_KEY_JSON を設定してください。"));
+
 
 		HttpClient httpClient = HttpClient.newHttpClient();
 
@@ -81,7 +85,7 @@ public class ChatService {
 				throw new IOException("ChatGPT APIエラー: " + response.getError().getError().getMessage());
 			} else if (response.getChoices() != null && !response.getChoices().isEmpty()) {
 				String content = response.getChoices().get(0).getMessage().getContent();
-				System.out.println("content:" + content);
+				System.out.println("content: " + content);
 				return content;
 			} else {
 				throw new IOException("ChatGPTからの予期せぬ応答形式です。完全なレスポンス: " + jsonString);
@@ -123,8 +127,7 @@ public class ChatService {
 
 	/**
 	 * 指定されたプロンプトを使用してChatGPT APIと通信し、 ユーザーの質問がどのカテゴリに属するかを示す数値を応答として取得します。
-	 * このメソッドの動作には、ChatServiceのインスタンス化時にカテゴリ分類のシステムプロンプトが設定されている必要があります。
-	 *
+	 * このメソッドの動作には、ChatServiceのインスタンス化時にカテゴリ分類のシステムプロンプトが設定されている必要があります。\n\t *
 	 * @param userPrompt ユーザーからの質問プロンプト
 	 * @return ChatGPT APIから戻ってきた数値
 	 * @throws IOException API通信またはJSON処理中にエラーが発生した場合
