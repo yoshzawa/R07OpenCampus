@@ -17,7 +17,7 @@ dependencies {
     compileOnly 'jakarta.servlet:jakarta.servlet-api:6.0.0' // ここを5.0.0から6.0.0に変更
 
     // JSON processing with GSON
-    implementation 'com.google.code.gson:gson:2.8.8'
+    implementation 'com.google.code.gson:gson:2.10.1' // ★ここを最新バージョンに更新★
 
     // Apache HTTP Client
     //implementation 'org.apache.httpcomponents.client5:httpclient5:5.1.3'
