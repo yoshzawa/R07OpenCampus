@@ -7,38 +7,38 @@ import com.google.gson.JsonSyntaxException;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Optional;
 
 public class ApiKeyReader {
-    public static String getApiKey() {
+    public static Optional<String> getApiKey() {
         // 1. 環境変数からAPIキーを直接取得するパターン (推奨)
-        //    CHATGPT_API_KEYという環境変数に直接APIキーを設定している場合
-        String apiKey = System.getenv("CHATGPT_API_KEY");
-        if (apiKey != null && !apiKey.isEmpty()) {
-            return apiKey;
+        String apiKeyFromEnv = System.getenv("CHATGPT_API_KEY");
+        if (apiKeyFromEnv != null && !apiKeyFromEnv.isEmpty()) {
+            return Optional.of(apiKeyFromEnv);
         }
 
         // 2. 環境変数にJSONパスが指定されている場合、JSONファイルから読み込むパターン
-        //    CHATGPT_API_KEY_JSONという環境変数にJSONファイルのパスを設定している場合
         String jsonPath = System.getenv("CHATGPT_API_KEY_JSON");
         if (jsonPath != null && !jsonPath.isEmpty()) {
-            try (FileReader reader = new FileReader(jsonPath)) { // try-with-resourcesで確実にクローズ
-                JsonObject obj = JsonParser.parseReader(reader).getAsJsonObject(); // Gson 2.8.8ならこちらがより直接的
+            try (FileReader reader = new FileReader(jsonPath)) {
+                JsonObject obj = JsonParser.parseReader(reader).getAsJsonObject();
 
                 if (obj.has("api_key")) {
-                    return obj.get("api_key").getAsString();
-                } else {
-                    throw new RuntimeException("JSONファイルに 'api_key' キーが見つかりません。");
+                    String apiKeyFromJson = obj.get("api_key").getAsString();
+                    if (apiKeyFromJson != null && !apiKeyFromJson.isEmpty()) {
+                        return Optional.of(apiKeyFromJson);
+                    }
                 }
             } catch (FileNotFoundException e) {
-                throw new RuntimeException("APIキーJSONファイルが見つかりません: " + jsonPath, e);
+                System.err.println("APIキーJSONファイルが見つかりません: " + jsonPath);
             } catch (JsonSyntaxException e) {
-                throw new RuntimeException("APIキーJSONファイルの形式が不正です。", e);
+                System.err.println("APIキーJSONファイルの形式が不正です。");
             } catch (IOException e) {
-                throw new RuntimeException("APIキーJSONファイルの読み込みエラー。", e);
+                System.err.println("APIキーJSONファイルの読み込みエラー。");
             }
         }
 
         // どちらの方法でもAPIキーが見つからない場合
-        throw new RuntimeException("APIキーが見つかりません。環境変数 CHATGPT_API_KEY または CHATGPT_API_KEY_JSON を設定してください。");
+        return Optional.empty();
     }
 }
