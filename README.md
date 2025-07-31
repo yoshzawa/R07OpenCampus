@@ -47,8 +47,6 @@
 
 * ビルドツール: Gradle
 
-* HTTPクライアント: Apache HttpClient 5
-
 * JSON処理: Gson
 
 * AIサービス: OpenAI ChatGPT API
