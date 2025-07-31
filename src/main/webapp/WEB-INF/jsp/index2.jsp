@@ -31,10 +31,7 @@ String message=(String)request.getAttribute("message");
             <%-- サーブレットからのメッセージがあれば表示 --%>
         </div>
 
-        <div class="footer">
-            <p>&copy; 2025 ホテルステラ仙台駅前. All Rights Reserved.</p>
-            <a href="./debug">デバッグページ</a>
-        </div>
     </div>
+    <%@ include file="../jspf/footer.jspf" %>
 </body>
 </html>

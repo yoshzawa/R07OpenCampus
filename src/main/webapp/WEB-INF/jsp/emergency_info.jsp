@@ -36,5 +36,6 @@
             <a href="javascript:history.back()">前のページに戻る</a>
         </div>
     </div>
+    <%@ include file="../jspf/footer.jspf" %>
 </body>
 </html>
