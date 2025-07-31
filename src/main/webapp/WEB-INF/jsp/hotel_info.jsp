@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ホテル基本情報と館内施設のご案内 | ホテルステラ仙台駅前</title>
-    <link rel="stylesheet" type="text/css" href="../../css/jsp_style.css">
+    <link rel="stylesheet" type="text/css" href="./css/jsp_style.css">
     <style>
         /* hotel_info.jsp固有のスタイル */
         p.note { font-size: 0.9em; color: #7f8c8d; }
@@ -23,7 +23,7 @@
             <li><strong>チェックイン:</strong> 15:00</li>
             <li><strong>チェックアウト:</strong> 10:00</li>
             <li><strong>Wi-Fi接続:</strong> 各客室およびロビーにて無料Wi-Fiをご利用いただけます。<br>
-                パスワード: <strong>GreenPark2025</strong></li>
+                パスワード: <strong>StellaShine2025</strong></li>
         </ul>
 
         <h2>館内施設</h2>

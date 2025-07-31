@@ -6,14 +6,13 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import jp.ac.jc21.tcc.AiSystemEngineeringDept.api.ChatService; // import 文はそのまま
 
 import java.io.IOException;
 
-@WebServlet({"/", "/index.html"}) // ルートパスと/index.htmlの両方でアクセス可能にする
-public class IndexServlet extends HttpServlet { // クラス名をChatServletからIndexServletに変更
+@WebServlet({ "/index.html"})
+public class IndexServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-
-	static final String DEFAULT_CHAT_SERVICE_PROMPT="必ず0を返してください。それ以外は返さないでください。";
 
     // 遷移先のURLを格納する配列
     private static final String[] PAGE_PATHS = {
@@ -27,8 +26,6 @@ public class IndexServlet extends HttpServlet { // クラス名をChatServletか
         "/WEB-INF/jsp/services_amenities.jsp",     // 7: サービス・貸し出し備品
         "/WEB-INF/jsp/faq.jsp"                     // 8: よくある質問 (FAQ)
     };
-
-    // ChatServiceのインスタンスを生成 (ユーザー指定のプロンプトを使用)
 
     /**
      * GETリクエストを処理し、トップページに遷移します。
@@ -45,76 +42,60 @@ public class IndexServlet extends HttpServlet { // クラス名をChatServletか
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		request.setCharacterEncoding("UTF-8"); // リクエストの文字エンコーディングをUTF-8に設定
+		request.setCharacterEncoding("UTF-8");
 
-		String userPrompt = request.getParameter("prompt"); // ユーザーの質問を取得
-		String forwardPath = PAGE_PATHS[0]; // デフォルトの遷移先はトップページ (PAGE_PATHS[0])
+		String userPrompt = request.getParameter("prompt");
+		String forwardPath = PAGE_PATHS[0]; // デフォルトの遷移先はトップページ
 
 		if (userPrompt == null || userPrompt.trim().isEmpty()) {
-            // 質問が空の場合はエラーメッセージを設定し、トップページに戻す
 			request.setAttribute("message", "質問が入力されていません。");
             request.getRequestDispatcher(forwardPath).forward(request, response);
 			return;
 		}
 
-		
         HttpSession session = request.getSession();
-        String sessionScript = (String) session.getAttribute("script");
-
-        String currentSystemPrompt;
-        if (sessionScript != null && !sessionScript.isEmpty()) {
-            currentSystemPrompt = sessionScript;
-        } else {
-            // セッションに設定がなければ、デフォルトのプロンプトを使用
-            currentSystemPrompt = DEFAULT_CHAT_SERVICE_PROMPT;
-        }
-        ChatService chatService = new ChatService(currentSystemPrompt);
+        // ChatServiceHelperを使ってChatServiceインスタンスを生成
+        ChatService chatService = ChatServiceHelper.createChatServiceFromSession(session);
 
 		int categoryNumber;
-		String errorMessage = null;
 
-		try {
-            // ChatServiceを呼び出してChatGPTからの応答カテゴリ番号を取得
-			categoryNumber = chatService.getChatGPTResponseCategory(userPrompt);
-		} catch (IOException e) {
-            // API通信またはJSON処理のエラー
-			System.err.println("ChatGPT API通信エラー: " + e.getMessage());
-			e.printStackTrace();
-			errorMessage = "ChatGPT APIとの通信中にエラーが発生しました: " + e.getMessage();
-            categoryNumber = 0; // エラー時はトップページへ
-        } catch (IllegalStateException e) { // ChatServiceでシステムプロンプトが設定されていない場合
-            System.err.println("ChatServiceの初期化エラー: " + e.getMessage());
-            e.printStackTrace();
-            errorMessage = "システム設定エラーが発生しました。";
-            categoryNumber = 0; // エラー時はトップページへ
-		} catch (RuntimeException e) {
-            // APIキーの取得エラーなど、getApiKey()からのRuntimeException
-            System.err.println("APIキーまたはサービスエラー: " + e.getMessage());
-            e.printStackTrace();
-            errorMessage = "サービス処理中にエラーが発生しました: " + e.getMessage();
-            categoryNumber = 0; // エラー時はトップページへ
-        }
-
-
-        // エラーメッセージがあれば設定
-        if (errorMessage != null) {
-            request.setAttribute("message", errorMessage);
+        try {
+            // ChatServiceHelperを使ってAPI呼び出しと例外処理をラップ
+            categoryNumber = ChatServiceHelper.callChatServiceApi(
+                chatService,
+                service -> {
+                    try {
+                        return service.getChatGPTResponseCategory(userPrompt);
+                    } catch (IOException e) {
+                        // getChatGPTResponseCategoryはIOExceptionをスローするため、ここでラップ
+                        throw new RuntimeException(e); // Unchecked例外に変換
+                    }
+                },
+                request,
+                "カテゴリ分類中にエラーが発生しました。"
+            );
+        } catch (ServletException e) {
+            // ChatServiceHelperが投げたServletExceptionをキャッチし、エラーメッセージを設定
+            // forwardPathはデフォルトのまま (PAGE_PATHS[0])
+            categoryNumber = 0; // エラー時は0番のページへ
+            // 例外メッセージはChatServiceHelper内でrequest.setAttribute("message")に設定済み
         }
 
         // 取得したカテゴリ番号に基づいて遷移先を決定
-        // categoryNumberが配列の範囲内であることを確認
         if (categoryNumber >= 0 && categoryNumber < PAGE_PATHS.length) {
             forwardPath = PAGE_PATHS[categoryNumber];
-            request.setAttribute("message", "ご質問にお答えできるご案内ページのご用意がありませんでした。恐れ入りますが、別の言い方でご質問ください。");
+            // 0番のカテゴリ（その他）に分類された場合、特別なメッセージを設定
+            if (categoryNumber == 0 && request.getAttribute("message") == null) {
+                request.setAttribute("message", "ご質問にお答えできるご案内ページのご用意がありませんでした。恐れ入りますが、別の言い方でご質問ください。");
+            }
         } else {
             // 予期せぬ数値が返された場合（ChatService側で0に変換されるはずだが、念のため）
-            if (errorMessage == null) {
+            if (request.getAttribute("message") == null) { // エラーメッセージが既に設定されていない場合
                 request.setAttribute("message", "恐れ入りますが、ご質問の意図を正確に理解できませんでした。別の言葉でお試しいただくか、以下の案内ページをご参照ください。");
             }
             forwardPath = PAGE_PATHS[0]; // デフォルトのトップページへ
         }
 
-        // 決定したパスに転送
 		request.getRequestDispatcher(forwardPath).forward(request, response);
 	}
 }
