@@ -84,7 +84,7 @@ public class ChatService {
 			if (response.getError() != null) {
 				throw new IOException("ChatGPT APIエラー: " + response.getError().getError().getMessage());
 			} else if (response.getChoices() != null && !response.getChoices().isEmpty()) {
-				String content = response.getChoices().get(0).getMessage().getContent();
+				String content = response.getChoices().get(0).getMessage().content();
 				System.out.println("content: " + content);
 				return content;
 			} else {
