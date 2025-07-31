@@ -32,7 +32,7 @@ String message=(String)request.getAttribute("message");
         </div>
 
         <div class="footer">
-            <p>&copy; 2025 ホテルステラ仙台駅前. All Rights Reserved.</p>
+            <p>&copy; 2025 Tohoku Computer College AI System Engineering Dept. Some Rights Reserved.</p>
             <a href="./debug">設定ページ</a>
         </div>
     </div>
