@@ -22,7 +22,6 @@ public class IndexServlet extends HttpServlet {
     private static final Map<String, String> PAGE_PATHS_MAP = new HashMap<>();
     static {
         PAGE_PATHS_MAP.put("index", "/WEB-INF/jsp/index.jsp");
-        PAGE_PATHS_MAP.put("index2", "/WEB-INF/jsp/index2.jsp");
         PAGE_PATHS_MAP.put("hotel_info", "/WEB-INF/jsp/hotel_info.jsp");
         PAGE_PATHS_MAP.put("restaurant_breakfast", "/WEB-INF/jsp/restaurant_breakfast.jsp");
         PAGE_PATHS_MAP.put("sightseeing_spots", "/WEB-INF/jsp/sightseeing_spots.jsp");
@@ -32,6 +31,19 @@ public class IndexServlet extends HttpServlet {
         PAGE_PATHS_MAP.put("services_amenities", "/WEB-INF/jsp/services_amenities.jsp");
         PAGE_PATHS_MAP.put("faq", "/WEB-INF/jsp/faq.jsp");
     }
+
+    // ページ遷移先のキーを番号順に並べた配列
+    private static final String[] PAGE_KEYS = {
+        "index",                // カテゴリ0: その他
+        "hotel_info",           // カテゴリ1: ホテル情報
+        "restaurant_breakfast", // カテゴリ2: レストラン・朝食
+        "sightseeing_spots",    // カテゴリ3: 観光スポット
+        "gourmet_shopping",     // カテゴリ4: グルメ・ショッピング
+        "transportation",       // カテゴリ5: 交通機関
+        "emergency_info",       // カテゴリ6: 非常時
+        "services_amenities",   // カテゴリ7: サービス・備品
+        "faq"                   // カテゴリ8: FAQ
+    };
 
     /**
      * GETリクエストを処理し、トップページ、またはパス情報に基づいて指定されたJSPページに遷移します。
@@ -59,7 +71,7 @@ public class IndexServlet extends HttpServlet {
                 return;
             }
         }
-        
+
         request.getRequestDispatcher(forwardPath).forward(request, response);
     }
 
@@ -75,7 +87,7 @@ public class IndexServlet extends HttpServlet {
 
 		String userPrompt = request.getParameter("prompt");
 		// デフォルトの遷移先をMapから取得
-		String forwardPath = PAGE_PATHS_MAP.get("index2");
+		String forwardPath = PAGE_PATHS_MAP.get("index");
 
 		if (userPrompt == null || userPrompt.trim().isEmpty()) {
 			request.setAttribute("message", "質問が入力されていません。");
@@ -106,19 +118,18 @@ public class IndexServlet extends HttpServlet {
 			);
 		} catch (ServletException e) {
 			// ChatServiceHelperが投げたServletExceptionをキャッチし、エラーメッセージを設定
-			// forwardPathはデフォルトのまま (index2.jsp)
+			// forwardPathはデフォルトのまま (index.jsp)
 			categoryNumber = 0; // エラー時は0番のページへ
 			// 例外メッセージはChatServiceHelper内でrequest.setAttribute("message")に設定済み
 		}
 
 		// 取得したカテゴリ番号に基づいて遷移先を決定
-		// PAGE_PATHS_MAPのキーを配列のインデックスとして取得
-		String[] pageKeys = PAGE_PATHS_MAP.keySet().toArray(new String[0]);
-		if (categoryNumber >= 0 && categoryNumber < pageKeys.length) {
-			String key = pageKeys[categoryNumber];
-			forwardPath = PAGE_PATHS_MAP.getOrDefault(key, PAGE_PATHS_MAP.get("index2"));
+		// PAGE_KEYS配列のインデックスとしてカテゴリ番号を使用
+		if (categoryNumber >= 0 && categoryNumber < PAGE_KEYS.length) {
+			String key = PAGE_KEYS[categoryNumber];
+			forwardPath = PAGE_PATHS_MAP.get(key);
 			// 0番のカテゴリ（その他）に分類された場合、特別なメッセージを設定
-			if (key.equals("index2") && request.getAttribute("message") == null) {
+			if (key.equals("index") && request.getAttribute("message") == null) {
 				request.setAttribute("message", "ご質問にお答えできるご案内ページのご用意がありませんでした。恐れ入りますが、別の言い方でご質問ください。");
 			}
 		} else {
@@ -126,7 +137,7 @@ public class IndexServlet extends HttpServlet {
 			if (request.getAttribute("message") == null) { // エラーメッセージが既に設定されていない場合
 				request.setAttribute("message", "恐れ入りますが、ご質問の意図を正確に理解できませんでした。別の言葉でお試しいただくか、以下の案内ページをご参照ください。");
 			}
-			forwardPath = PAGE_PATHS_MAP.get("index2"); // デフォルトのトップページへ
+			forwardPath = PAGE_PATHS_MAP.get("index"); // デフォルトのトップページへ
 		}
 
 		request.getRequestDispatcher(forwardPath).forward(request, response);
