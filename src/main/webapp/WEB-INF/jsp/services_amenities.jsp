@@ -1,15 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8"%>
-
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>サービス・貸し出し備品のご案内 | ホテルステラ仙台駅前</title>
-    <link rel="stylesheet" type="text/css" href="./css/jsp_style.css">
-
-</head>
-<body>
+<%@ include file="../jspf/header.jspf" %>
+<title>サービス・貸し出し備品のご案内 | ホテルステラ仙台駅前</title>
     <div class="container">
         <h1>サービス・貸し出し備品のご案内</h1>
         <p>ホテルステラ仙台駅前でご利用いただけるサービスと、貸し出し備品についてご案内いたします。</p>
@@ -41,5 +32,6 @@
             <a href="javascript:history.back()">前のページに戻る</a>
         </div>
     </div>
+    <%@ include file="../jspf/footer.jspf" %>
 </body>
 </html>

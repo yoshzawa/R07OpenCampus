@@ -1,16 +1,9 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8"%>
-<!DOCTYPE html>
-<html lang="ja">
 <%
 String message=(String)request.getAttribute("message");
 %>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ホテルステラ仙台駅前 | トップページ</title>
-    <link rel="stylesheet" type="text/css" href="./css/jsp_style.css">
-</head>
-<body>
+<%@ include file="../jspf/header.jspf" %>
+<title>ホテルステラ仙台駅前 | トップページ</title>
     <div class="container">
         <h1>ホテルステラ仙台駅前へようこそ</h1>
         <p>お客様の快適なご滞在をサポートいたします。</p>
