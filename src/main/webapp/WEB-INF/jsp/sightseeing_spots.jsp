@@ -1,15 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8"%>
-
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>観光・周辺情報（主要スポット） | ホテルステラ仙台駅前</title>
-    <link rel="stylesheet" type="text/css" href="./css/jsp_style.css">
-
-</head>
-<body>
+<%@ include file="../jspf/header.jspf" %>
+<title>観光・周辺情報（主要スポット） | ホテルステラ仙台駅前</title>
     <div class="container">
         <h1>観光・周辺情報（主要スポット）</h1>
         <p>ホテルステラ仙台駅前周辺の主要な観光スポットをご案内いたします。</p>
@@ -42,5 +33,6 @@
             <a href="javascript:history.back()">前のページに戻る</a>
         </div>
     </div>
+    <%@ include file="../jspf/footer.jspf" %>
 </body>
 </html>

@@ -6,38 +6,67 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import jp.ac.jc21.tcc.AiSystemEngineeringDept.api.ChatService; // import 文はそのまま
+import jp.ac.jc21.tcc.AiSystemEngineeringDept.api.ChatService;
 
 import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
 
-@WebServlet({ "/index.html"})
+// "/index.html"と、"/pages/*"のパスパターンを処理する
+@WebServlet({ "/index.html", "/pages/*"})
 public class IndexServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-    // 遷移先のURLを格納する配列
-    private static final String[] PAGE_PATHS = {
-        "/WEB-INF/jsp/index2.jsp",                   // 0: その他、またはエラー時
-        "/WEB-INF/jsp/hotel_info.jsp",             // 1: ホテル基本情報と館内施設
-        "/WEB-INF/jsp/restaurant_breakfast.jsp",   // 2: レストラン・朝食会場
-        "/WEB-INF/jsp/sightseeing_spots.jsp",      // 3: 観光・主要スポット
-        "/WEB-INF/jsp/gourmet_shopping.jsp",       // 4: 観光・グルメ・ショッピング
-        "/WEB-INF/jsp/transportation.jsp",         // 5: 交通機関
-        "/WEB-INF/jsp/emergency_info.jsp",         // 6: 非常時
-        "/WEB-INF/jsp/services_amenities.jsp",     // 7: サービス・貸し出し備品
-        "/WEB-INF/jsp/faq.jsp"                     // 8: よくある質問 (FAQ)
-    };
+    // 元のPAGE_PATHS配列の代わりに、キーと値で管理するMapを使用
+    // これにより、URLのパスとJSPファイルのパスを分かりやすく紐づけられる
+    private static final Map<String, String> PAGE_PATHS_MAP = new HashMap<>();
+    static {
+        PAGE_PATHS_MAP.put("index", "/WEB-INF/jsp/index.jsp");
+        PAGE_PATHS_MAP.put("index2", "/WEB-INF/jsp/index2.jsp");
+        PAGE_PATHS_MAP.put("hotel_info", "/WEB-INF/jsp/hotel_info.jsp");
+        PAGE_PATHS_MAP.put("restaurant_breakfast", "/WEB-INF/jsp/restaurant_breakfast.jsp");
+        PAGE_PATHS_MAP.put("sightseeing_spots", "/WEB-INF/jsp/sightseeing_spots.jsp");
+        PAGE_PATHS_MAP.put("gourmet_shopping", "/WEB-INF/jsp/gourmet_shopping.jsp");
+        PAGE_PATHS_MAP.put("transportation", "/WEB-INF/jsp/transportation.jsp");
+        PAGE_PATHS_MAP.put("emergency_info", "/WEB-INF/jsp/emergency_info.jsp");
+        PAGE_PATHS_MAP.put("services_amenities", "/WEB-INF/jsp/services_amenities.jsp");
+        PAGE_PATHS_MAP.put("faq", "/WEB-INF/jsp/faq.jsp");
+    }
 
     /**
-     * GETリクエストを処理し、トップページに遷移します。
+     * GETリクエストを処理し、トップページ、またはパス情報に基づいて指定されたJSPページに遷移します。
+     * 「/pages/」から始まるURLは、このメソッドで処理されます。
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("/WEB-INF/jsp/index.jsp").forward(request, response);
+
+        // リクエストされたパスからパス情報を取得
+        String pathInfo = request.getPathInfo();
+        String forwardPath = PAGE_PATHS_MAP.get("index"); // デフォルトの遷移先
+
+        // pathInfoがnullでない、かつ、パスの長さが1より大きい（例: "/index"）場合
+        if (pathInfo != null && pathInfo.length() > 1) {
+            // 先頭の'/'を削除してページ名を取得
+            String pageName = pathInfo.substring(1);
+            // マップからJSPパスを取得
+            String targetJspPath = PAGE_PATHS_MAP.get(pageName);
+            if (targetJspPath != null) {
+                forwardPath = targetJspPath;
+            } else {
+                // マップに存在しない場合は404 Not Foundエラー
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, "The requested page was not found.");
+                return;
+            }
+        }
+        
+        request.getRequestDispatcher(forwardPath).forward(request, response);
     }
+
 
     /**
      * POSTリクエストを処理し、ChatGPTからの応答に基づいて適切な案内ページに遷移します。
+     * このメソッドは、`/index.html`へのフォーム送信などで呼び出されます。
      */
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -45,56 +74,60 @@ public class IndexServlet extends HttpServlet {
 		request.setCharacterEncoding("UTF-8");
 
 		String userPrompt = request.getParameter("prompt");
-		String forwardPath = PAGE_PATHS[0]; // デフォルトの遷移先はトップページ
+		// デフォルトの遷移先をMapから取得
+		String forwardPath = PAGE_PATHS_MAP.get("index2");
 
 		if (userPrompt == null || userPrompt.trim().isEmpty()) {
 			request.setAttribute("message", "質問が入力されていません。");
-            request.getRequestDispatcher(forwardPath).forward(request, response);
+			request.getRequestDispatcher(forwardPath).forward(request, response);
 			return;
 		}
 
-        HttpSession session = request.getSession();
-        // ChatServiceHelperを使ってChatServiceインスタンスを生成
-        ChatService chatService = ChatServiceHelper.createChatServiceFromSession(session);
+		HttpSession session = request.getSession();
+		// ChatServiceHelperを使ってChatServiceインスタンスを生成
+		ChatService chatService = ChatServiceHelper.createChatServiceFromSession(session);
 
 		int categoryNumber;
 
-        try {
-            // ChatServiceHelperを使ってAPI呼び出しと例外処理をラップ
-            categoryNumber = ChatServiceHelper.callChatServiceApi(
-                chatService,
-                service -> {
-                    try {
-                        return service.getChatGPTResponseCategory(userPrompt);
-                    } catch (IOException e) {
-                        // getChatGPTResponseCategoryはIOExceptionをスローするため、ここでラップ
-                        throw new RuntimeException(e); // Unchecked例外に変換
-                    }
-                },
-                request,
-                "カテゴリ分類中にエラーが発生しました。"
-            );
-        } catch (ServletException e) {
-            // ChatServiceHelperが投げたServletExceptionをキャッチし、エラーメッセージを設定
-            // forwardPathはデフォルトのまま (PAGE_PATHS[0])
-            categoryNumber = 0; // エラー時は0番のページへ
-            // 例外メッセージはChatServiceHelper内でrequest.setAttribute("message")に設定済み
-        }
+		try {
+			// ChatServiceHelperを使ってAPI呼び出しと例外処理をラップ
+			categoryNumber = ChatServiceHelper.callChatServiceApi(
+				chatService,
+				service -> {
+					try {
+						return service.getChatGPTResponseCategory(userPrompt);
+					} catch (IOException e) {
+						// getChatGPTResponseCategoryはIOExceptionをスローするため、ここでラップ
+						throw new RuntimeException(e); // Unchecked例外に変換
+					}
+				},
+				request,
+				"カテゴリ分類中にエラーが発生しました。"
+			);
+		} catch (ServletException e) {
+			// ChatServiceHelperが投げたServletExceptionをキャッチし、エラーメッセージを設定
+			// forwardPathはデフォルトのまま (index2.jsp)
+			categoryNumber = 0; // エラー時は0番のページへ
+			// 例外メッセージはChatServiceHelper内でrequest.setAttribute("message")に設定済み
+		}
 
-        // 取得したカテゴリ番号に基づいて遷移先を決定
-        if (categoryNumber >= 0 && categoryNumber < PAGE_PATHS.length) {
-            forwardPath = PAGE_PATHS[categoryNumber];
-            // 0番のカテゴリ（その他）に分類された場合、特別なメッセージを設定
-            if (categoryNumber == 0 && request.getAttribute("message") == null) {
-                request.setAttribute("message", "ご質問にお答えできるご案内ページのご用意がありませんでした。恐れ入りますが、別の言い方でご質問ください。");
-            }
-        } else {
-            // 予期せぬ数値が返された場合（ChatService側で0に変換されるはずだが、念のため）
-            if (request.getAttribute("message") == null) { // エラーメッセージが既に設定されていない場合
-                request.setAttribute("message", "恐れ入りますが、ご質問の意図を正確に理解できませんでした。別の言葉でお試しいただくか、以下の案内ページをご参照ください。");
-            }
-            forwardPath = PAGE_PATHS[0]; // デフォルトのトップページへ
-        }
+		// 取得したカテゴリ番号に基づいて遷移先を決定
+		// PAGE_PATHS_MAPのキーを配列のインデックスとして取得
+		String[] pageKeys = PAGE_PATHS_MAP.keySet().toArray(new String[0]);
+		if (categoryNumber >= 0 && categoryNumber < pageKeys.length) {
+			String key = pageKeys[categoryNumber];
+			forwardPath = PAGE_PATHS_MAP.getOrDefault(key, PAGE_PATHS_MAP.get("index2"));
+			// 0番のカテゴリ（その他）に分類された場合、特別なメッセージを設定
+			if (key.equals("index2") && request.getAttribute("message") == null) {
+				request.setAttribute("message", "ご質問にお答えできるご案内ページのご用意がありませんでした。恐れ入りますが、別の言い方でご質問ください。");
+			}
+		} else {
+			// 予期せぬ数値が返された場合
+			if (request.getAttribute("message") == null) { // エラーメッセージが既に設定されていない場合
+				request.setAttribute("message", "恐れ入りますが、ご質問の意図を正確に理解できませんでした。別の言葉でお試しいただくか、以下の案内ページをご参照ください。");
+			}
+			forwardPath = PAGE_PATHS_MAP.get("index2"); // デフォルトのトップページへ
+		}
 
 		request.getRequestDispatcher(forwardPath).forward(request, response);
 	}

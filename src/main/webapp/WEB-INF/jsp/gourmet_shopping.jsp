@@ -1,13 +1,6 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>観光・周辺情報（グルメ・ショッピング） | ホテルステラ仙台駅前</title>
-    <link rel="stylesheet" type="text/css" href="./css/jsp_style.css">
-
+<%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8"%>
+<%@ include file="../jspf/header.jspf" %>
+<title>観光・周辺情報（グルメ・ショッピング） | ホテルステラ仙台駅前</title>
 </head>
 <body>
     <div class="container">
