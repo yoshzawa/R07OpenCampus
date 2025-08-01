@@ -1,32 +1,18 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8"%>
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ホテル基本情報と館内施設のご案内 | ホテルステラ仙台駅前</title>
     <link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/css/jsp_style.css">
     <style>
         /* hotel_info.jsp固有のスタイル */
         p.note { font-size: 0.9em; color: #7f8c8d; }
     </style>
+    <title>ホテル基本情報と館内施設のご案内 | ホテルステラ仙台駅前</title>
 </head>
 <body>
-    <div class="navigation-bar">
-        <ul>
-            <li><a href="<%= request.getContextPath() %>/index.html">トップ</a></li>
-            <li><a href="<%= request.getContextPath() %>/pages/hotel_info">ホテル情報</a></li>
-            <li><a href="<%= request.getContextPath() %>/pages/restaurant_breakfast">レストラン・朝食</a></li>
-            <li><a href="<%= request.getContextPath() %>/pages/sightseeing_spots">観光スポット</a></li>
-            <li><a href="<%= request.getContextPath() %>/pages/gourmet_shopping">グルメ・ショッピング</a></li>
-            <li><a href="<%= request.getContextPath() %>/pages/transportation">交通機関</a></li>
-            <li><a href="<%= request.getContextPath() %>/pages/emergency_info">非常時</a></li>
-            <li><a href="<%= request.getContextPath() %>/pages/services_amenities">サービス・備品</a></li>
-            <li><a href="<%= request.getContextPath() %>/pages/faq">FAQ</a></li>
-        </ul>
-    </div>
-
+<%@ include file="../jspf/header.jspf" %>
     <div class="container">
         <h1>ホテル基本情報と館内施設のご案内</h1>
         <p>ホテルステラ仙台駅前をご利用いただき、誠にありがとうございます。当ホテルの基本情報と館内施設をご案内いたします。</p>

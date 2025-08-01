@@ -1,6 +1,14 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/css/jsp_style.css">
+    <title>非常時のご案内 | ホテルステラ仙台駅前</title>
+</head>
+<body>
 <%@ include file="../jspf/header.jspf" %>
-<title>非常時のご案内 | ホテルステラ仙台駅前</title>
     <div class="container">
         <h1>非常時のご案内</h1>
         <p class="important-note">緊急時は落ち着いて行動し、ホテルの指示に従ってください。</p>
