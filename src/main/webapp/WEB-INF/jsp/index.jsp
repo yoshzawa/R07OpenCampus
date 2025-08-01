@@ -33,5 +33,7 @@ String message=(String)request.getAttribute("message");
         </div>
     </div>
     <%@ include file="../jspf/footer.jspf" %>
+                <a href="./debug">設定ページ</a>
+    
 </body>
 </html>
