@@ -1,6 +1,14 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/css/jsp_style.css">
+    <title>よくあるご質問（FAQ） | ホテルステラ仙台駅前</title>
+</head>
+<body>
 <%@ include file="../jspf/header.jspf" %>
-<title>よくあるご質問（FAQ） | ホテルステラ仙台駅前</title>
     <div class="container">
         <h1>よくあるご質問（FAQ）</h1>
         <p>お客様からよくいただくご質問とその回答をまとめました。</p>
