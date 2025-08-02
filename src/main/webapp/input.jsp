@@ -33,6 +33,7 @@
                     <option value="交通関連の情報であれば5を、それ以外は0を返してください。それ以外は返さないようにしてください。数字一文字だけ返してください。それ以外は返さないでください。">交通関連 (5/0)</option>
                     <option value="館内施設に関する情報であれば1を、レストランに関する情報であれば2を、それ以外は0を返してください。数字一文字だけ返してください。それ以外は返さないでください。">館内施設/レストラン (1/2/0)</option>
                     <option value="館内施設に関する情報であれば1を、レストランに関する情報であれば2を、観光や主要スポットに関しては3を、グルメやショッピングに関しては4を、交通関連の情報であれば5を、非常時の避難経路に関しては6を、備品やサービスについては7を、よくある質問については8を、それ以外は0を返してください。数字一文字だけ返してください。それ以外は返さないでください。">すべてのページ(1-8/0)</option>
+                    <option value="Given a Japanese sentence or question, classify it into one of the following categories:\n- 1: On-site facilities\n- 2: Restaurants\n- 3: Sightseeing and major spots\n- 4: Gourmet food and shopping\n- 5: Transportation\n- 6: Emergency evacuation routes\n- 7: Amenities and services\n- 8: Frequently asked questions\n- 0: Other\n\nYour output must be a single digit corresponding to the category.\nDo not output any other text, symbols, or newlines.\n\nExample:\nInput: 「売店の場所はどこですか？」\nOutput: 1\nInput: 「ホテルから空港までのアクセス方法を教えてください」\nOutput: 5">COMPLETE(1-8/0)</option>
                 </select>
             </div>
             <label for="systemPromptInput">新しいシステムプロンプト:</label>
