@@ -16,7 +16,7 @@
 name: Build and deploy WAR app to Azure Web App
 
 env:
-  AZURE_WEBAPP_NAME: R07OpenCampus    # Azure Web Appの名前を設定してください
+  AZURE_WEBAPP_NAME: 2025OpenCampus    # Azure Web Appの名前を設定してください
   JAVA_VERSION: '17'                  # 使用するJavaのバージョンを設定してください
   DISTRIBUTION: zulu                  # 使用するJavaディストリビューションを設定してください
 
